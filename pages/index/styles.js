@@ -1,3 +1,5 @@
+import { lb, lbHover, g, gHover, r, rHover } from '../../config/color';
+
 const styles = theme => ({
   root: {
     padding: 16
@@ -8,9 +10,6 @@ const styles = theme => ({
     color: theme.palette.text.secondary
   },
   indexContainer: {
-    // display: 'flex',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
     height: '100vh'
   },
   flexRow: {
@@ -23,6 +22,7 @@ const styles = theme => ({
   },
   indexContent: {
     border: '1px black dashed',
+    borderRadius: 8,
     padding: 16,
     margin: '0 auto',
     width: '80%',
@@ -46,6 +46,44 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-end'
+  },
+  alertDiv: {
+    borderRadius: 8,
+    margin: '16px 0',
+    display: 'flex',
+    alignItems: 'center',
+    '& *': {
+      padding: 8
+    }
+  },
+  btnDiv: {
+    margin: '16px 0',
+    '& *': {
+      margin: '8px 0'
+    }
+  },
+  green: {
+    color: gHover,
+    backgroundColor: g
+  },
+  blue: {
+    color: lbHover,
+    backgroundColor: lb
+  },
+  red: {
+    color: rHover,
+    backgroundColor: r
+  },
+  link: {
+    textDecoration: 'underline',
+    cursor: 'pointer'
+  },
+  modalPapper: {
+    position: 'absolute',
+    width: theme.spacing.unit * 70,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing.unit * 4
   }
 });
 
