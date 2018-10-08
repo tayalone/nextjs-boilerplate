@@ -9,8 +9,7 @@ import {
 const theme = createMuiTheme({
   typography: {
     useNextVariants: true
-  },
-  suppressDeprecationWarnings: true
+  }
 });
 
 function createPageContext() {
