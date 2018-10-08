@@ -7,11 +7,15 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  MenuItem,
   IconButton
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 import styles from './styles';
+import devices from './devices';
+
 function Transition(props) {
   return <Slide direction="down" {...props} />;
 }
@@ -19,25 +23,50 @@ function Transition(props) {
 class loginWithFacebook extends Component {
   state = {
     email: '',
-    password: ''
+    password: '',
+    device: 'iphone',
+    facebookToken: ''
   };
   closeModal = () => {
     this.setState({
       email: '',
-      password: ''
+      password: '',
+      device: '',
+      facebookTokenLink: '',
+      facebookToken: ''
     });
     this.props.handleClose();
   };
   setValue = (e, name) => {
     this.setState({ [name]: e.target.value });
   };
-  getFacebookeTokenLink = () => {
-    const { email, password } = this.state;
-    alert(`${email} - ${password}`);
+  getFacebookeTokenLink = async () => {
+    const { email, password, device } = this.state;
+    // alert(`${email} - ${password} - ${device}`);
+    const res = await axios({
+      method: 'post',
+      url: 'http://localhost:3000/api/users/createGetFacebookTokenLink',
+      data: {
+        email,
+        password,
+        device
+      }
+    });
+    const link = res.data.data.link;
+
+    //console.log(link);
+    this.setState({
+      facebookTokenLink: 'https://jsonplaceholder.typicode.com/posts'
+    });
+  };
+  onIframeLoaded = () => {
+    var iframe = document.getElementById('facebookIframe');
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    console.log(innerDoc.body);
   };
   render() {
     const { open, classes } = this.props;
-    const { email, password } = this.state;
+    const { email, password, device, facebookTokenLink } = this.state;
     return (
       <Dialog
         open={open}
@@ -79,6 +108,29 @@ class loginWithFacebook extends Component {
             value={password}
             onChange={e => this.setValue(e, 'password')}
           />
+          <TextField
+            id="device"
+            select
+            label="Select"
+            value={device}
+            onChange={e => this.setValue(e, 'device')}
+            helperText="Please select your device"
+            margin="normal"
+            fullWidth
+          >
+            {devices.map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          {facebookTokenLink ? (
+            <iframe
+              id="facebookIframe"
+              onLoad={this.onIframeLoaded}
+              src={facebookTokenLink}
+            />
+          ) : null}
         </DialogContent>
         <DialogActions>
           <Button onClick={this.closeModal.bind(this)} color="primary">
