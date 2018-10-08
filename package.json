@@ -1,5 +1,5 @@
 {
-  "name": "create-next-example-app",
+  "name": "popone-fontend",
   "scripts": {
     "dev": "next",
     "build": "next build",
@@ -12,6 +12,10 @@
     "react-redux": "^5.0.1",
     "redux": "^3.6.0",
     "redux-devtools-extension": "^2.13.2",
-    "redux-thunk": "^2.1.0"
+    "redux-thunk": "^2.1.0",
+    "@material-ui/core": "latest",
+    "jss": "latest",
+    "react-jss": "latest",
+    "prop-types": "latest"
   }
 }
