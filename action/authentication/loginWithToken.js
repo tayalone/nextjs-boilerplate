@@ -17,6 +17,7 @@ export default (token, closeModal) => {
       });
       const data = res.data.data;
       console.log(data);
+      localStorage.setItem('popone_accessToken', data.accessToken);
       dispatch(success(data));
       closeModal();
       setTimeout(function() {

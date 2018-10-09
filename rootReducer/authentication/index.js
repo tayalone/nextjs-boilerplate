@@ -1,7 +1,10 @@
 import {
   LOGIN_WITH_TOKEN_INIT,
   LOGIN_WITH_TOKEN_SUCCESS,
-  LOGIN_WITH_TOKEN_FAILED
+  LOGIN_WITH_TOKEN_FAILED,
+  CHECK_LOGIN_INIT,
+  CHECK_LOGIN_SUCCESS,
+  CHECK_LOGIN_FAILED
 } from '../../action/actionTypes';
 
 const initState = {
@@ -42,6 +45,15 @@ const reducer = (state = initState, action) => {
     case LOGIN_WITH_TOKEN_FAILED: {
       const errorMessage = action.errorMessage;
       return { ...state, isLoading: false, errorMessage };
+    }
+    case CHECK_LOGIN_INIT: {
+      return { ...state, isLoading: true };
+    }
+    case CHECK_LOGIN_SUCCESS: {
+      return { ...state };
+    }
+    case CHECK_LOGIN_FAILED: {
+      return { ...state };
     }
     default:
       return state;

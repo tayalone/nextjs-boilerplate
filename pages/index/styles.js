@@ -38,7 +38,7 @@ const styles = theme => ({
     '@media (min-width: 1280px)': {
       width: '60%'
     },
-    '@media (min-width: 19200px)': {
+    '@media (min-width: 1920px)': {
       width: '60%'
     }
   },

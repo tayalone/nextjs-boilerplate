@@ -1,19 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-const checkLogin = WrappedComponent => {
+import checkLogin from '../action/authentication/checkLogin';
+import Spinner from '../components/UI/spinner';
+const checkLoginHOC = WrappedComponent => {
   class ComponentCheckLogin extends Component {
+    componentWillMount() {
+      this.props.checkLogin();
+    }
     render() {
-      const { value } = this.props;
-      return <WrappedComponent parentValue={value} />;
+      const { value, isLoading } = this.props;
+      return (
+        <div>
+          {isLoading ? (
+            <div>
+              <Spinner />
+            </div>
+          ) : (
+            <WrappedComponent {...this.props} />
+          )}
+        </div>
+      );
     }
   }
   const mapStateToProps = state => {
-    const { counter } = state;
-    const { value } = counter;
-    return { value };
+    const { isLoading } = state.authentication;
+    return { isLoading };
   };
-  return connect(mapStateToProps)(ComponentCheckLogin);
+  const mapDispatchToProps = dispatch => {
+    return bindActionCreators({ checkLogin }, dispatch);
+  };
+  return connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(ComponentCheckLogin);
 };
 
-export default checkLogin;
+export default checkLoginHOC;
