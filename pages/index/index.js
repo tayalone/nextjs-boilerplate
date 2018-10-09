@@ -15,10 +15,11 @@ import IndexHeader from '../../components/UI/indexHeader';
 import Footer from '../../components/UI/footer';
 import LoginWithFacebook from '../../components/Dialog/loginWithFacebook';
 import LoginWihtToken from '../../components/Dialog/loginWihtToken';
+import testConnectRedux from '../../hoc/testConnectRedux';
 class index extends Component {
   state = {
     openUser: false,
-    openToken: true
+    openToken: false
   };
   openEnableFacebook = () => {
     window.open('https://www.facebook.com/settings?tab=privacy', '_blank');
@@ -115,7 +116,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({ addNumber, subNumber }, dispatch);
 };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(index));
+export default testConnectRedux(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withStyles(styles)(index))
+);

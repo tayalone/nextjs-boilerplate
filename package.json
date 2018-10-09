@@ -1,7 +1,7 @@
 {
   "name": "popone-fontend",
   "scripts": {
-    "dev": "next PORT= 3001",
+    "dev": "next -p 3001",
     "build": "next build",
     "start": "next start"
   },

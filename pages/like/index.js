@@ -4,7 +4,7 @@ export default class index extends Component {
   render() {
     return (
       <div>
-        <h1> like and follow</h1>
+        <h1> like </h1>
       </div>
     );
   }

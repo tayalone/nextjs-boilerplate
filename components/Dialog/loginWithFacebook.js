@@ -14,20 +14,22 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import styles from './styles';
 import devices from './devices';
+import loginWithToken from '../../action/authentication/loginWithToken';
 function Transition(props) {
   return <Slide timeout={1500} direction="down" {...props} />;
 }
 
 class loginWithFacebook extends Component {
   state = {
-    email: '',
-    password: '',
+    email: 'tay056283440@hotmail.com',
+    password: 'T_ay02061992',
     device: 'iphone',
     facebookTokenLink: '',
     facebookToken: '',
-    errorMessage: '',
     textAreaToggle: false
   };
   closeModal = () => {
@@ -36,7 +38,6 @@ class loginWithFacebook extends Component {
       password: '',
       device: 'iphone',
       facebookTokenLink: '',
-      errorMessage: '',
       facebookToken: '',
       textAreaToggle: false
     });
@@ -57,65 +58,50 @@ class loginWithFacebook extends Component {
         device
       }
     });
-    const correctLink = `https://api.facebook.com/restserver.php?api_key=3e7c78e35a76a9299309885393b02d97&credentials_type=password&email=tay056283440@hotmai.com&format=JSON&method=auth.login&password=T_ay0992853958&v=1.0&sig=ec670a863c82561d97aabe8662e0d913`;
     const link = res.data.data.link;
+    console.log(link);
     this.setState({
-      facebookTokenLink: correctLink
+      facebookTokenLink: link
     });
   };
-  //   onIframeLoaded = () => {
-  //     var iframe = document.getElementById('facebookIframe');
-  //     var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-  //     console.log(innerDoc.body);
-  //   };
+  onIframeLoaded = () => {
+    var iframe = document.getElementById('facebookIframe');
+    var elmnt = iframe.contentWindow.document.getElementsByTagName('body');
+    console.log(elmnt);
+  };
   onTextfieldChange = async e => {
     if (e.target.value) {
-      const obj = JSON.parse(e.target.value);
-      if (obj.error_code) {
-        this.setState({
-          facebookToken: '',
-          textAreaToggle: true,
-          errorMessage: obj.error_msg
-        });
-      } else {
-        try {
-          const token = obj.access_token;
-          const res = await axios({
-            method: 'post',
-            url: 'http://localhost:3000/api/users/loginWithToken',
-            data: { token }
+      try {
+        const obj = JSON.parse(e.target.value);
+        if (obj.error_code) {
+          this.setState({
+            facebookToken: '',
+            textAreaToggle: true
           });
-          const data = res.data.data;
-          console.log(data);
-          //ปิด modal
-          this.closeModal();
-          //redirect
-          setTimeout(function() {
-            Router.push({
-              pathname: '/likefollow'
-            });
-          }, 3000);
-
+        } else {
+          this.props.loginWithToken(
+            obj.access_token,
+            this.closeModal.bind(this)
+          );
           this.setState({
             facebookToken: obj.access_token,
             textAreaToggle: true
           });
-        } catch (e) {
-          console.log(e);
         }
+      } catch (e) {
+        console.log(e);
       }
     } else {
       return;
     }
   };
   render() {
-    const { open, classes } = this.props;
+    const { open, classes, isLoading, errorMessage } = this.props;
     const {
       email,
       password,
       device,
       facebookTokenLink,
-      errorMessage,
       facebookToken,
       textAreaToggle
     } = this.state;
@@ -177,7 +163,7 @@ class loginWithFacebook extends Component {
               <iframe
                 style={{ width: '100%' }}
                 id="facebookIframe"
-                //   onLoad={this.onIframeLoaded}
+                // onLoad={this.onIframeLoaded}
                 src={facebookTokenLink}
               />
               <TextField
@@ -218,4 +204,15 @@ class loginWithFacebook extends Component {
   }
 }
 
-export default withStyles(styles)(loginWithFacebook);
+const mapStateToProps = state => {
+  const { isLoading, errorMessage } = state.authentication;
+  return { isLoading, errorMessage };
+};
+const mapdispatchToProps = dispatch => {
+  return bindActionCreators({ loginWithToken }, dispatch);
+};
+
+export default connect(
+  mapStateToProps,
+  mapdispatchToProps
+)(withStyles(styles)(loginWithFacebook));

@@ -15,6 +15,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import styles from './styles';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import loginWithToken from '../../action/authentication/loginWithToken';
 
 function Transition(props) {
   return <Slide timeout={1500} direction="down" {...props} />;
@@ -23,7 +26,6 @@ function Transition(props) {
 class loginWihtToken extends Component {
   state = {
     facebookToken: '',
-    errorMessage: '',
     textAreaToggle: false
   };
   closeModal = () => {
@@ -36,40 +38,14 @@ class loginWihtToken extends Component {
   };
   onTextfieldChange = async e => {
     if (e.target.value) {
-      try {
-        this.setState({
-          facebookToken: token
-        });
-        const token = e.target.value;
-        const res = await axios({
-          method: 'post',
-          url: 'http://localhost:3000/api/users/loginWithToken',
-          data: { token }
-        });
-        const data = res.data.data;
-        console.log(data);
-        //ปิด modal
-        this.closeModal();
-        //redirect
-        setTimeout(function() {
-          Router.push({
-            pathname: '/likefollow'
-          });
-        }, 3000);
-      } catch (e) {
-        const { message } = e.response.data;
-        this.setState({
-          errorMessage: message
-        });
-        console.log(message);
-      }
+      this.props.loginWithToken(e.target.value, this.closeModal.bind(this));
     } else {
       return;
     }
   };
   render() {
-    const { open, classes } = this.props;
-    const { errorMessage, facebookToken, textAreaToggle } = this.state;
+    const { open, classes, isLoading, errorMessage } = this.props;
+    const { facebookToken, textAreaToggle } = this.state;
     return (
       <Dialog
         open={open}
@@ -111,4 +87,15 @@ class loginWihtToken extends Component {
   }
 }
 
-export default withStyles(styles)(loginWihtToken);
+const mapStateToProps = state => {
+  const { isLoading, errorMessage } = state.authentication;
+  return { isLoading, errorMessage };
+};
+const mapdispatchToProps = dispatch => {
+  return bindActionCreators({ loginWithToken }, dispatch);
+};
+
+export default connect(
+  mapStateToProps,
+  mapdispatchToProps
+)(withStyles(styles)(loginWihtToken));

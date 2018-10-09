@@ -6,6 +6,8 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import JssProvider from 'react-jss/lib/JssProvider';
 import getPageContext from '../src/getPageContext';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 class MyApp extends App {
   constructor(props) {
@@ -47,5 +49,10 @@ class MyApp extends App {
     );
   }
 }
+
+const mapStateToProps = state => {
+  const { value } = stat.counter;
+  console.log(value);
+};
 
 export default withReduxStore(MyApp);
