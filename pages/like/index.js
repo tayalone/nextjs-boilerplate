@@ -1,86 +1,105 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import axios from 'axios';
+import Button from '@material-ui/core/Button';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import styles from './styles';
+
 import ProfileHeader from '../../components/ProfileHeader';
-const styles = theme => ({
-  root: {
-    padding: 8,
-    margin: 8
-  },
-  container: {},
-  avatar: {
-    borderRadius: '50%;',
-    '@media (max-width: 599px)': {
-      width: 75,
-      heigth: 75
-    },
-    '@media (min-width: 600px)': {
-      width: 100,
-      heigth: 100
-    },
-    '@media (min-width: 960px)': {
-      width: 125,
-      heigth: 125
-    },
-    '@media (min-width: 1280px)': {
-      width: 150,
-      heigth: 150
-    },
-    '@media (min-width: 1920px)': {
-      width: 175,
-      heigth: 175
-    }
-  },
-  paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    margin: '16px auto',
-    '@media (max-width: 599px)': {
-      width: '95%'
-    },
-    '@media (min-width: 600px)': {
-      width: '90%'
-    },
-    '@media (min-width: 960px)': {
-      width: '75%'
-    },
-    '@media (min-width: 1280px)': {
-      width: '60%'
-    },
-    '@media (min-width: 1920px)': {
-      width: '50%'
-    }
-  }
-});
+import SwitchPage from '../../components/UI/switchPage';
+import Spinner from '../../components/UI/spinner';
+import Post from '../../components/Post';
+import delay from '../../lib/delay';
 
 class index extends Component {
-  state = { accessToken: '' };
+  state = {
+    accessToken: '',
+    fb_accessToken: '',
+    countryCode: '',
+    config: '',
+    locale: '',
+    feedData: [],
+    paging: {},
+    isLoading: true
+  };
   async componentDidMount() {
-    const accessToken = localStorage.getItem('popone_accessToken');
-    this.setState({ accessToken });
+    try {
+      const accessToken = localStorage.getItem('popone_accessToken');
+      const resCheckLogin = await axios.get(
+        `http://localhost:3000/api/users/checkLogin?access_token=${accessToken}`
+      );
+      const { data: userData } = resCheckLogin.data;
+      const { fb_accessToken, countryCode, config, locale } = userData;
+      await delay(2000);
+      const feedLink = `https://graph.facebook.com/v3.0/me/feed?fields=picture,object_id,from,id,type,link,message,place,privacy&limit=${10}method=get&access_token=${fb_accessToken}`;
+      const resFeed = await axios.get(feedLink);
+      const { data: feedData, paging } = resFeed.data;
+      //console.log(paging);
+      this.setState({
+        accessToken,
+        fb_accessToken,
+        countryCode,
+        config,
+        locale,
+        feedData,
+        paging,
+        isLoading: false
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
+  refrechFeed = async () => {
+    try {
+      this.setState({
+        feedData,
+        paging,
+        isLoading: true
+      });
+      await delay(2000);
+      const { fb_accessToken } = this.state;
+      const feedLink = `https://graph.facebook.com/v3.0/me/feed?fields=picture,object_id,from,id,type,link,message,place,privacy&limit=${10}method=get&access_token=${fb_accessToken}`;
+      const resFeed = await axios.get(feedLink);
+      const { data: feedData, paging } = resFeed.data;
+      this.setState({
+        feedData,
+        paging,
+        isLoading: false
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
   render() {
-    const { accessToken } = this.state;
     const { classes } = this.props;
+    const { isLoading } = this.state;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
+          <SwitchPage classes={classes} Type={'like'} />
+        </Paper>
+        <Paper className={classes.paper}>
           <ProfileHeader />
         </Paper>
-        <Paper className={classes.paper}>Profile</Paper>
-        <Paper className={classes.paper}>Profile</Paper>
-        <Paper className={classes.paper}>Profile</Paper>
-        {/* <Grid justify={'center'} container spacing={24}>
-          <Grid item xs={12} xl={6} lg={6} md={8}>
-            <Paper className={classes.paper}>Profile</Paper>
-          </Grid>
-          <Grid item xs={12} xl={6} lg={6} md={8}>
-            <Paper className={classes.paper}>post</Paper>
-          </Grid>
-        </Grid> */}
+        <div style={{ display: 'flex', justifyContent: 'center', margin: 10 }}>
+          <Button
+            variant="contained"
+            className={classes.button}
+            onClick={this.refrechFeed.bind(this)}
+          >
+            <RefreshIcon style={{ marginRight: 8 }} />
+            รีเฟรสหน้าฟีด
+          </Button>
+        </div>
+        {isLoading ? (
+          <Spinner size={60} />
+        ) : (
+          <Fragment>
+            <Post />
+            <Post />
+          </Fragment>
+        )}
       </div>
     );
   }
