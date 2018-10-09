@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Button,
   Slide,
@@ -15,7 +15,6 @@ import { withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import styles from './styles';
 import devices from './devices';
-
 function Transition(props) {
   return <Slide direction="down" {...props} />;
 }
@@ -31,7 +30,7 @@ class loginWithFacebook extends Component {
     this.setState({
       email: '',
       password: '',
-      device: '',
+      device: 'iphone',
       facebookTokenLink: '',
       facebookToken: ''
     });
@@ -53,17 +52,15 @@ class loginWithFacebook extends Component {
       }
     });
     const link = res.data.data.link;
-
-    //console.log(link);
     this.setState({
       facebookTokenLink: 'https://jsonplaceholder.typicode.com/posts'
     });
   };
-  onIframeLoaded = () => {
-    var iframe = document.getElementById('facebookIframe');
-    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-    console.log(innerDoc.body);
-  };
+  //   onIframeLoaded = () => {
+  //     var iframe = document.getElementById('facebookIframe');
+  //     var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+  //     console.log(innerDoc.body);
+  //   };
   render() {
     const { open, classes } = this.props;
     const { email, password, device, facebookTokenLink } = this.state;
@@ -125,11 +122,22 @@ class loginWithFacebook extends Component {
             ))}
           </TextField>
           {facebookTokenLink ? (
-            <iframe
-              id="facebookIframe"
-              onLoad={this.onIframeLoaded}
-              src={facebookTokenLink}
-            />
+            <Fragment>
+              <iframe
+                style={{ width: '100%' }}
+                id="facebookIframe"
+                //   onLoad={this.onIframeLoaded}
+                src={facebookTokenLink}
+              />
+              <TextField
+                id="jsonValue"
+                label="Multiline"
+                multiline
+                rows="4"
+                margin="normal"
+                fullWidth
+              />
+            </Fragment>
           ) : null}
         </DialogContent>
         <DialogActions>

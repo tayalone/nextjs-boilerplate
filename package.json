@@ -1,7 +1,7 @@
 {
   "name": "popone-fontend",
   "scripts": {
-    "dev": "next -p 3001",
+    "dev": "next PORT= 3001",
     "build": "next build",
     "start": "next start"
   },
@@ -13,13 +13,15 @@
     "jss": "latest",
     "next": "^7.0.1",
     "prop-types": "latest",
+    "puppeteer": "^1.9.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-jss": "latest",
     "react-redux": "^5.0.1",
     "redux": "^3.6.0",
     "redux-devtools-extension": "^2.13.2",
-    "redux-thunk": "^2.1.0"
+    "redux-thunk": "^2.1.0",
+    "ws": "^6.1.0"
   },
   "devDependencies": {
     "dotenv": "^6.0.0"
