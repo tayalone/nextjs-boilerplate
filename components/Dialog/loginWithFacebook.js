@@ -210,7 +210,7 @@ class loginWithFacebook extends Component {
             Generate Token
           </Button>
           <Button onClick={this.closeModal.bind(this)} color="secondary">
-            Disagree
+            Close Modal
           </Button>
         </DialogActions>
       </Dialog>

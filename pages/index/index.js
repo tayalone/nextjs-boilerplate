@@ -9,36 +9,31 @@ import SettingIcon from '@material-ui/icons/SettingsOutlined';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import AccontIcon from '@material-ui/icons/AccountCircleOutlined';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-
 import styles from './styles';
 import { addNumber, subNumber } from '../../action';
 import IndexHeader from '../../components/UI/indexHeader';
 import Footer from '../../components/UI/footer';
 import LoginWithFacebook from '../../components/Dialog/loginWithFacebook';
-
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
-
+import LoginWihtToken from '../../components/Dialog/loginWihtToken';
 class index extends Component {
   state = {
-    open: true
+    openUser: false,
+    openToken: true
   };
   openEnableFacebook = () => {
     window.open('https://www.facebook.com/settings?tab=privacy', '_blank');
   };
-  handleClickOpen = () => {
-    this.setState({ open: true });
+  handleClickOpenUser = () => {
+    this.setState({ openUser: true });
   };
-
-  handleClose = () => {
-    this.setState({ open: false });
+  handleCloseUser = () => {
+    this.setState({ openUser: false });
+  };
+  handleClickOpenToken = () => {
+    this.setState({ openToken: true });
+  };
+  handleCloseToken = () => {
+    this.setState({ openToken: false });
   };
   render() {
     const { value, addNumber, subNumber, classes } = this.props;
@@ -59,11 +54,15 @@ class index extends Component {
                 <Button
                   fullWidth
                   variant="outlined"
-                  onClick={this.handleClickOpen}
+                  onClick={this.handleClickOpenUser}
                 >
                   เข้าสู่ระบบด้วย Facebook
                 </Button>
-                <Button fullWidth variant="outlined">
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={this.handleClickOpenToken}
+                >
                   เข้าสู่ระบบด้วย Token
                 </Button>
               </div>
@@ -95,8 +94,12 @@ class index extends Component {
         </Grid>
         {String(this.state.open)}
         <LoginWithFacebook
-          open={this.state.open}
-          handleClose={this.handleClose.bind(this)}
+          open={this.state.openUser}
+          handleClose={this.handleCloseUser.bind(this)}
+        />
+        <LoginWihtToken
+          open={this.state.openToken}
+          handleClose={this.handleCloseToken.bind(this)}
         />
       </div>
     );
