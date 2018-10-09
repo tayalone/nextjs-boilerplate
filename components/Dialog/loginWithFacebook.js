@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import Router from 'next/router';
 import {
   Button,
   Slide,
@@ -16,7 +17,7 @@ import axios from 'axios';
 import styles from './styles';
 import devices from './devices';
 function Transition(props) {
-  return <Slide direction="down" {...props} />;
+  return <Slide timeout={1500} direction="down" {...props} />;
 }
 
 class loginWithFacebook extends Component {
@@ -24,7 +25,10 @@ class loginWithFacebook extends Component {
     email: '',
     password: '',
     device: 'iphone',
-    facebookToken: ''
+    facebookTokenLink: '',
+    facebookToken: '',
+    errorMessage: '',
+    textAreaToggle: false
   };
   closeModal = () => {
     this.setState({
@@ -32,7 +36,9 @@ class loginWithFacebook extends Component {
       password: '',
       device: 'iphone',
       facebookTokenLink: '',
-      facebookToken: ''
+      errorMessage: '',
+      facebookToken: '',
+      textAreaToggle: false
     });
     this.props.handleClose();
   };
@@ -51,9 +57,10 @@ class loginWithFacebook extends Component {
         device
       }
     });
+    const correctLink = `https://api.facebook.com/restserver.php?api_key=3e7c78e35a76a9299309885393b02d97&credentials_type=password&email=tay056283440@hotmai.com&format=JSON&method=auth.login&password=T_ay0992853958&v=1.0&sig=ec670a863c82561d97aabe8662e0d913`;
     const link = res.data.data.link;
     this.setState({
-      facebookTokenLink: 'https://jsonplaceholder.typicode.com/posts'
+      facebookTokenLink: correctLink
     });
   };
   //   onIframeLoaded = () => {
@@ -61,9 +68,57 @@ class loginWithFacebook extends Component {
   //     var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
   //     console.log(innerDoc.body);
   //   };
+  onTextfieldChange = async e => {
+    if (e.target.value) {
+      const obj = JSON.parse(e.target.value);
+      if (obj.error_code) {
+        this.setState({
+          facebookToken: '',
+          textAreaToggle: true,
+          errorMessage: obj.error_msg
+        });
+      } else {
+        try {
+          const token = obj.access_token;
+          const res = await axios({
+            method: 'post',
+            url: 'http://localhost:3000/api/users/loginWithToken',
+            data: { token }
+          });
+          const data = res.data.data;
+          console.log(data);
+          //ปิด modal
+          this.closeModal();
+          //redirect
+          setTimeout(function() {
+            Router.push({
+              pathname: '/likefollow'
+            });
+          }, 3000);
+
+          this.setState({
+            facebookToken: obj.access_token,
+            textAreaToggle: true
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    } else {
+      return;
+    }
+  };
   render() {
     const { open, classes } = this.props;
-    const { email, password, device, facebookTokenLink } = this.state;
+    const {
+      email,
+      password,
+      device,
+      facebookTokenLink,
+      errorMessage,
+      facebookToken,
+      textAreaToggle
+    } = this.state;
     return (
       <Dialog
         open={open}
@@ -74,11 +129,7 @@ class loginWithFacebook extends Component {
         aria-describedby="alert-dialog-slide-description"
       >
         <div className={classes.closeDiv}>
-          <IconButton
-            className={classes.button}
-            aria-label="close-modal"
-            onClick={this.closeModal.bind(this)}
-          >
+          <IconButton className={classes.button} aria-label="close-modal">
             <CloseIcon />
           </IconButton>
         </div>
@@ -130,25 +181,36 @@ class loginWithFacebook extends Component {
                 src={facebookTokenLink}
               />
               <TextField
+                onChange={e => this.onTextfieldChange(e)}
                 id="jsonValue"
-                label="Multiline"
+                // label="Multiline"
                 multiline
                 rows="4"
                 margin="normal"
                 fullWidth
+                error={
+                  (facebookToken === '' &&
+                    facebookTokenLink !== '' &&
+                    textAreaToggle) ||
+                  errorMessage
+                    ? Boolean(true)
+                    : Boolean(false)
+                }
+                helperText={errorMessage}
               />
             </Fragment>
           ) : null}
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.closeModal.bind(this)} color="primary">
-            Disagree
-          </Button>
           <Button
             onClick={this.getFacebookeTokenLink.bind(this)}
             color="primary"
+            disabled={errorMessage ? Boolean(true) : Boolean(false)}
           >
-            Agree
+            Generate Token
+          </Button>
+          <Button onClick={this.closeModal.bind(this)} color="secondary">
+            Disagree
           </Button>
         </DialogActions>
       </Dialog>
