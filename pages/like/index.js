@@ -10,10 +10,18 @@ import ProfileHeader from '../../components/ProfileHeader';
 import SwitchPage from '../../components/UI/switchPage';
 import Spinner from '../../components/UI/spinner';
 import Post from '../../components/Post';
+import LikePost from '../../components/Dialog/likePost';
 import delay from '../../lib/delay';
+import {
+  createFeedLink,
+  createProfileLink
+} from '../../lib/createFacebookLink';
+import { createCheckLogin } from '../../lib/createMyApiLink';
 
 class index extends Component {
   state = {
+    name: '',
+    profilePicture: '',
     accessToken: '',
     fb_accessToken: '',
     countryCode: '',
@@ -21,22 +29,26 @@ class index extends Component {
     locale: '',
     feedData: [],
     paging: {},
-    isLoading: true
+    isLoading: true,
+    openModal: true,
+    postIndex: 4
   };
   async componentDidMount() {
     try {
       const accessToken = localStorage.getItem('popone_accessToken');
-      const resCheckLogin = await axios.get(
-        `http://localhost:3000/api/users/checkLogin?access_token=${accessToken}`
-      );
+      const resCheckLogin = await axios.get(createCheckLogin(accessToken));
       const { data: userData } = resCheckLogin.data;
       const { fb_accessToken, countryCode, config, locale } = userData;
       await delay(2000);
-      const feedLink = `https://graph.facebook.com/v3.0/me/feed?fields=picture,object_id,from,id,type,link,message,place,privacy&limit=${10}method=get&access_token=${fb_accessToken}`;
+      const profileLink = createProfileLink(fb_accessToken);
+      const resProfile = await axios.get(profileLink);
+      const { picture: profilePicture, name } = resProfile.data;
+      const feedLink = createFeedLink(fb_accessToken);
       const resFeed = await axios.get(feedLink);
       const { data: feedData, paging } = resFeed.data;
-      //console.log(paging);
       this.setState({
+        name,
+        profilePicture,
         accessToken,
         fb_accessToken,
         countryCode,
@@ -59,7 +71,7 @@ class index extends Component {
       });
       await delay(2000);
       const { fb_accessToken } = this.state;
-      const feedLink = `https://graph.facebook.com/v3.0/me/feed?fields=picture,object_id,from,id,type,link,message,place,privacy&limit=${10}method=get&access_token=${fb_accessToken}`;
+      const feedLink = createFeedLink(fb_accessToken);
       const resFeed = await axios.get(feedLink);
       const { data: feedData, paging } = resFeed.data;
       this.setState({
@@ -71,22 +83,47 @@ class index extends Component {
       console.log(e);
     }
   };
+  onOpenPopUp = index => {
+    //alert(index);
+    this.setState({
+      openModal: true,
+      postIndex: index
+    });
+  };
+  onClosePopUp = () => {
+    this.setState({
+      openModal: false,
+      postIndex: -1
+    });
+  };
   render() {
     const { classes } = this.props;
-    const { isLoading } = this.state;
+    const {
+      isLoading,
+      feedData,
+      name,
+      profilePicture,
+      openModal,
+      postIndex
+    } = this.state;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <SwitchPage classes={classes} Type={'like'} />
+          <SwitchPage classes={classes} Type={'like'} isLoading={isLoading} />
         </Paper>
         <Paper className={classes.paper}>
-          <ProfileHeader />
+          <ProfileHeader
+            isLoading={isLoading}
+            name={name}
+            profilePicture={profilePicture}
+          />
         </Paper>
         <div style={{ display: 'flex', justifyContent: 'center', margin: 10 }}>
           <Button
             variant="contained"
             className={classes.button}
             onClick={this.refrechFeed.bind(this)}
+            disabled={isLoading ? Boolean(true) : Boolean(false)}
           >
             <RefreshIcon style={{ marginRight: 8 }} />
             รีเฟรสหน้าฟีด
@@ -96,10 +133,20 @@ class index extends Component {
           <Spinner size={60} />
         ) : (
           <Fragment>
-            <Post />
-            <Post />
+            {feedData.map((data, index) => {
+              return (
+                <Post
+                  key={`post-${data.id}`}
+                  profilePicture={profilePicture}
+                  data={data}
+                  index={index}
+                  onOpenPopUp={this.onOpenPopUp.bind(this)}
+                />
+              );
+            })}
           </Fragment>
         )}
+        <LikePost open={openModal} closeModal={this.onClosePopUp.bind(this)} />
       </div>
     );
   }

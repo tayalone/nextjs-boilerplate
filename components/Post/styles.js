@@ -1,4 +1,5 @@
 import { p, pHover } from '../../config/color';
+import { rHover, gHover } from '../../config/color';
 const styles = theme => ({
   avatar: {
     marginRight: 10,
@@ -14,7 +15,6 @@ const styles = theme => ({
   post: {
     padding: theme.spacing.unit * 2,
     margin: '16px auto',
-    border: '1px dashed gainsboro',
     borderRadius: 5,
     '@media (max-width: 599px)': {
       width: '95%'
@@ -31,6 +31,12 @@ const styles = theme => ({
     '@media (min-width: 1920px)': {
       width: '50%'
     }
+  },
+  red: {
+    border: `2px dashed ${rHover}`
+  },
+  green: {
+    border: `2px dashed ${gHover}`
   },
   postPaper: {
     padding: theme.spacing.unit * 2,

@@ -1,35 +1,67 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { Paper, Button, Typography } from '@material-ui/core/';
+import classNames from 'classnames';
+import moment from 'moment';
 import HeartIcon from '@material-ui/icons/FavoriteBorder';
 import styles from './styles';
-const post = ({ classes }) => {
+const post = ({ classes, profilePicture, data, index, onOpenPopUp }) => {
+  const { total_count } = data.reactions.summary;
+  const onClickLink = url => {
+    window.open(url, '_blank');
+  };
+  const { value, description } = data.privacy;
+  const { created_time } = data;
+  moment.locale('th');
+  const ms = Date.parse(created_time);
+  const date = new Date(ms);
+  const checkPublic =
+    value === 'EVERYONE' && description === 'Public'
+      ? Boolean(true)
+      : Boolean(false);
   return (
-    <div className={classes.post}>
+    <div
+      className={classNames(classes.post, {
+        [classes.red]: !checkPublic,
+        [classes.green]: checkPublic
+      })}
+    >
       <Paper className={classes.postPaper}>
-        <img
-          className={classes.avatar}
-          src="https://via.placeholder.com/50x50"
-        />
+        <img className={classes.avatar} src={profilePicture} />
         <Typography variant="h4" gutterBottom>
-          h4. Heading
+          {data.message}
         </Typography>
         <img
-          src="https://via.placeholder.com/600x200"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onClickLink(data.link)}
+          src={data.picture}
           className={classes.picture}
         />
         <div className={classes.actionLikeDiv}>
           <div className={classes.likeDiv}>
             <HeartIcon style={{ marginRight: 8 }} />
-            <Typography variant="caption">0 like</Typography>
+            <Typography variant="caption">{total_count} ไลค์</Typography>
           </div>
-          <Button variant="contained" color="primary">
-            ปั้มไลค์
-          </Button>
+          {checkPublic ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => onOpenPopUp(index)}
+            >
+              ปั้มไลค์
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => onClickLink(`https://facebook.com/${data.id}`)}
+            >
+              ปรับโพสต์ของคุณให้เป็น "สาธารณะ"
+            </Button>
+          )}
+
           <div>
-            <Typography variant="caption">time</Typography>
+            <Typography variant="caption">{moment(date).fromNow()}</Typography>
           </div>
         </div>
       </Paper>

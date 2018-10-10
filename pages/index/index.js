@@ -37,7 +37,7 @@ class index extends Component {
     this.setState({ openToken: false });
   };
   render() {
-    const { value, addNumber, subNumber, classes } = this.props;
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <Grid container className={classes.indexContainer} spacing={16}>
