@@ -197,6 +197,7 @@ class index extends Component {
               color="primary"
               className={classes.button}
               onClick={this.punpLike.bind(this)}
+              disabled={action === '' ? Boolean(true) : Boolean(false)}
             >
               ปั้ม Like
             </Button>

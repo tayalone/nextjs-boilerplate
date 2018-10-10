@@ -14,7 +14,8 @@ import LikePost from '../../components/Dialog/likePost';
 import delay from '../../lib/delay';
 import {
   createFeedLink,
-  createProfileLink
+  createProfileLink,
+  createPostSumary
 } from '../../lib/createFacebookLink';
 import { createCheckLogin } from '../../lib/createMyApiLink';
 
@@ -108,13 +109,23 @@ class index extends Component {
     friendTotalMax,
     gender
   ) => {
-    console.log(action, ageMin, ageMax, friendTotalMin, friendTotalMax, gender);
+    //console.log(action, ageMin, ageMax, friendTotalMin, friendTotalMax, gender);
+    const { postIndex, feedData, fb_accessToken } = this.state;
+    const currentPost = feedData[postIndex];
+    const { id, reactions } = currentPost;
+    let { total_count } = reactions.summary;
+    // console.log(id, fb_accessToken);
+    console.log(`totat_count :${total_count}`);
     this.setState({ likeState: 'process' });
     const inteval = setInterval(async () => {
-      let { testCallApi } = this.state;
-      const res = await axios.get('https://jsonplaceholder.typicode.com/posts');
-      console.log(testCallApi + 1);
-      this.setState({ testCallApi: testCallApi + 1 });
+      let { feedData } = this.state;
+      const res = await axios.get(createPostSumary(id, fb_accessToken));
+      // ใช้จริง
+      // const new_total_count = res.data.summary.total_count
+      // feedData[postIndex].reactions.summary.total_count = new_total_count;
+      total_count = total_count + 5;
+      feedData[postIndex].reactions.summary.total_count = total_count;
+      this.setState({ feedData: feedData });
     }, 5000);
     await delay(20000);
     clearInterval(inteval);
