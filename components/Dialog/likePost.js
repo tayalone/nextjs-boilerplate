@@ -1,7 +1,19 @@
 import React, { Component, Fragment } from 'react';
 import HeartIcon from '@material-ui/icons/FavoriteBorder';
 import Spinner from '../UI/spinner';
-import delay from '../../lib/delay';
+import Slider from 'rc-slider';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
+const Range = createSliderWithTooltip(Slider.Range);
+
+function log(value) {
+  console.log(value); //eslint-disable-line
+}
+
 import {
   Button,
   Slide,
@@ -28,7 +40,7 @@ class index extends Component {
     ageMax: 40,
     friendTotalMin: 50,
     friendTotalMax: 1500,
-    gender: 'random'
+    gender: 'both'
   };
   closeModal = () => {
     this.setState({
@@ -37,7 +49,7 @@ class index extends Component {
       ageMax: 40,
       friendTotalMin: 50,
       friendTotalMax: 1500,
-      gender: 'random'
+      gender: 'both'
     });
     this.props.closeModal();
   };
@@ -48,6 +60,20 @@ class index extends Component {
     } else {
       this.setState({ action });
     }
+  };
+  changeAgeRage = value => {
+    const ageMin = value[0];
+    const ageMax = value[1];
+    console.log(ageMin, ageMax);
+    this.setState({ ageMin, ageMax });
+  };
+  changeFollowRage = value => {
+    const friendTotalMin = value[0];
+    const friendTotalMax = value[1];
+    this.setState({ friendTotalMin, friendTotalMax });
+  };
+  handleChange = event => {
+    this.setState({ gender: event.target.value });
   };
   punpLike = () => {
     const {
@@ -70,7 +96,14 @@ class index extends Component {
   };
   render() {
     const { open, classes, data, likeState, isVip } = this.props;
-    const { action } = this.state;
+    const {
+      action,
+      ageMin,
+      ageMax,
+      friendTotalMin,
+      friendTotalMax,
+      gender
+    } = this.state;
     let total_count = 0;
 
     if (data) {
@@ -111,7 +144,66 @@ class index extends Component {
           </div>
           {likeState === 'init' ? (
             <div>
-              {isVip ? <div>VIP Section</div> : null}
+              {isVip ? (
+                <div>
+                  <div>
+                    <p>
+                      ช่วงอายุ: {ageMin}- {ageMax} ปี
+                    </p>
+                    <Range
+                      allowCross={false}
+                      defaultValue={[ageMin, ageMax]}
+                      onChange={this.changeAgeRage}
+                      min={18}
+                      max={40}
+                    />
+                  </div>
+                  <div>
+                    <p>
+                      ช่วเพื่อน: {friendTotalMin}- {friendTotalMax} คน
+                    </p>
+                    <Range
+                      allowCross={false}
+                      defaultValue={[friendTotalMin, friendTotalMax]}
+                      onChange={this.changeFollowRage}
+                      min={50}
+                      max={1500}
+                      step={50}
+                    />
+                  </div>
+                  <div style={{ margin: 8 }}>
+                    <FormControl
+                      component="fieldset"
+                      className={classes.formControl}
+                    >
+                      <FormLabel component="legend">เพศ</FormLabel>
+                      <RadioGroup
+                        aria-label="Gender"
+                        name="gender1"
+                        value={gender}
+                        onChange={this.handleChange}
+                        row
+                      >
+                        <FormControlLabel
+                          value="both"
+                          control={<Radio />}
+                          label="สุ่มเพศ"
+                        />
+                        <FormControlLabel
+                          value="female"
+                          control={<Radio />}
+                          label="เพศหญิง"
+                        />
+                        <FormControlLabel
+                          value="male"
+                          control={<Radio />}
+                          label="เพศชาย"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                </div>
+              ) : null}
               {action ? (
                 <Typography variant="subtitle2" gutterBottom>
                   รีแอคขั่น : {action}

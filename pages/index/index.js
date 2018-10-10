@@ -1,3 +1,4 @@
+import Router from 'next/router';
 import React, { Component } from 'react';
 import classNames from 'classnames';
 import { bindActionCreators } from 'redux';
@@ -7,8 +8,6 @@ import { Grid, Button } from '@material-ui/core';
 
 import SettingIcon from '@material-ui/icons/SettingsOutlined';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import AccontIcon from '@material-ui/icons/AccountCircleOutlined';
-
 import styles from './styles';
 import { addNumber, subNumber } from '../../action';
 import IndexHeader from '../../components/UI/indexHeader';
@@ -36,6 +35,14 @@ class index extends Component {
   handleCloseToken = () => {
     this.setState({ openToken: false });
   };
+  componentDidMount() {
+    const accessToken = localStorage.getItem('popone_accessToken');
+    if (accessToken) {
+      Router.push({
+        pathname: '/like'
+      });
+    }
+  }
   render() {
     const { classes } = this.props;
     return (

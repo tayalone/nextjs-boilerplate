@@ -32,7 +32,14 @@ class index extends Component {
       profilePicture,
       type,
       auto,
-      onClickSwitch
+      onClickSwitch,
+      isVip,
+      nextTime,
+      lastUpdated,
+      delay_sec,
+      diffVipTime_sec,
+      vip_date,
+      countDown
     } = this.props;
     const switchValue = auto === 1 ? true : false;
     return (
@@ -58,14 +65,26 @@ class index extends Component {
               </div>
               <div>
                 <Typography variant="body1" gutterBottom>
-                  Status : Free User
+                  Status : {isVip ? 'VIP user' : 'Free user'}
                 </Typography>
               </div>
               <div>
                 <Typography variant="body1" gutterBottom>
-                  เวลา vip
+                  เวลา vip : {isVip ? vip_date : '-'}
                 </Typography>
               </div>
+              <div>
+                <Typography variant="body1" gutterBottom>
+                  เวลาใช้งานล่าสุด : {countDown > 0 ? lastUpdated : '-'}
+                </Typography>
+              </div>
+              {countDown > 0 ? (
+                <div>
+                  <Typography variant="body1" gutterBottom>
+                    สามารถใช้งานครั้งต่อไปใน {parseInt(countDown)} วินาที
+                  </Typography>
+                </div>
+              ) : null}
               <div className={classes.action}>
                 <div>
                   <FormControlLabel

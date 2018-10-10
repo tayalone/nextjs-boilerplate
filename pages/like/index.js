@@ -42,11 +42,20 @@ class index extends Component {
     canLike: false,
     isVip: false,
     nextTime: '',
-    auto: 0
+    auto: 0,
+    vip_date: '',
+    delay_sec: 0,
+    diffVipTime_sec: 0,
+    countDown: 0
   };
   async componentDidMount() {
     try {
       const accessToken = localStorage.getItem('popone_accessToken');
+      if (!accessToken) {
+        Router.push({
+          pathname: '/'
+        });
+      }
       const resCheckLogin = await axios.get(createCheckLogin(accessToken));
       console.log(accessToken);
       //onsole.log(resCheckLogin.data);
@@ -66,8 +75,19 @@ class index extends Component {
         const testDelay = actionDelay * 1000;
         const temp2 = new Date(last_used.getTime() + testDelay);
         nextTime = temp2.toISOString();
+        this.setState({ countDown: delay_sec });
 
-        setInterval(() => {
+        let countDownF = setInterval(() => {
+          let { countDown } = this.state;
+          if (countDown > 0) {
+            countDown = countDown - 1;
+            this.setState({ countDown });
+          } else {
+            clearInterval(countDownF);
+          }
+        }, 1000);
+
+        setTimeout(() => {
           console.log('ถึงเวลา กด like ได้แล้ว');
           const nowDate = new Date();
           this.setState({ canLike: true, nextTime: nowDate.toISOString() });
@@ -113,7 +133,10 @@ class index extends Component {
         canLike,
         isVip,
         auto,
-        nextTime: nextTime
+        nextTime: nextTime,
+        vip_date,
+        delay_sec,
+        diffVipTime_sec
       });
     } catch (e) {
       console.log(e);
@@ -212,7 +235,19 @@ class index extends Component {
       const testDelay = actionDelay * 1000;
       const temp2 = new Date(nowDate.getTime() + testDelay);
       const nextTime = temp2.toISOString();
-      setInterval(() => {
+
+      this.setState({ countDown: actionDelay });
+      let countDownF = setInterval(() => {
+        let { countDown } = this.state;
+        if (countDown > 0) {
+          countDown = countDown - 1;
+          this.setState({ countDown });
+        } else {
+          clearInterval(countDownF);
+        }
+      }, 1000);
+
+      setTimeout(() => {
         console.log('ถึงเวลา กด like ได้แล้ว');
         const nowDate = new Date();
         this.setState({ canLike: true, nextTime: nowDate.toISOString() });
@@ -255,7 +290,13 @@ class index extends Component {
       likeState,
       canLike,
       isVip,
-      auto
+      auto,
+      lastUpdated,
+      nextTime,
+      vip_date,
+      delay_sec,
+      diffVipTime_sec,
+      countDown
     } = this.state;
     return (
       <div className={classes.root}>
@@ -270,6 +311,13 @@ class index extends Component {
             type={'like'}
             auto={auto}
             onClickSwitch={this.onClickSwitch.bind(this)}
+            nextTime={nextTime}
+            lastUpdated={lastUpdated}
+            delay_sec={delay_sec}
+            diffVipTime_sec={diffVipTime_sec}
+            vip_date={vip_date}
+            isVip={isVip}
+            countDown={countDown}
           />
         </Paper>
         <div style={{ display: 'flex', justifyContent: 'center', margin: 10 }}>

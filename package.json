@@ -15,6 +15,7 @@
     "next": "^7.0.1",
     "prop-types": "latest",
     "puppeteer": "^1.9.0",
+    "rc-slider": "^8.6.3",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-jss": "latest",
