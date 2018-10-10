@@ -5,7 +5,15 @@ import classNames from 'classnames';
 import moment from 'moment';
 import HeartIcon from '@material-ui/icons/FavoriteBorder';
 import styles from './styles';
-const post = ({ classes, profilePicture, data, index, onOpenPopUp }) => {
+const post = props => {
+  const {
+    classes,
+    profilePicture,
+    data,
+    onOpenPopUp,
+    testValue,
+    canLike
+  } = props;
   const { total_count } = data.reactions.summary;
   const onClickLink = url => {
     window.open(url, '_blank');
@@ -47,6 +55,7 @@ const post = ({ classes, profilePicture, data, index, onOpenPopUp }) => {
               variant="contained"
               color="primary"
               onClick={() => onOpenPopUp(index)}
+              disabled={canLike ? Boolean(false) : Boolean(true)}
             >
               ปั้มไลค์
             </Button>

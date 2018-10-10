@@ -31,7 +31,7 @@
 //           'EAAAAUaZA8jlABAIn4ZAPdIr21rgGDuK88omLaPZBxDg1LOrnbipO9alPol509AenLYIZBismI4izRF3xRIdO6ZBDSTrRu8bRA4SjWyM7hI0HOF9j9fAP3Jf9GMiepZAvb8yAThe2RdFZACY7FueQwfvC0puE0Y7822WP1jdp57rDAZDZD'
 //       }
 //     ];
-//     const sliceArr = obj.slice(330, 340);
+//     const sliceArr = obj.slice(500, 510);
 //     await Promise.all(
 //       sliceArr.map(async (t, index) => {
 //         const token = t.fb_accessToken;

@@ -33,14 +33,44 @@ class index extends Component {
     isLoading: true,
     openModal: false,
     postIndex: 0,
-    likeState: 'init'
+    likeState: 'init',
+    lastUpdated: '',
+    canLike: false,
+    nextTime: ''
   };
   async componentDidMount() {
     try {
       const accessToken = localStorage.getItem('popone_accessToken');
       const resCheckLogin = await axios.get(createCheckLogin(accessToken));
+      //onsole.log(resCheckLogin.data);
       const { data: userData } = resCheckLogin.data;
       const { fb_accessToken, countryCode, config, locale } = userData;
+      const { lastUpdated, delay: actionDelay } = config.like;
+      const current_Date = new Date();
+      const last_used = new Date(lastUpdated);
+      const diffTime_sec = (current_Date - last_used) / 1000;
+      let canLike = false;
+      let nextTime = '';
+      const delay_sec = actionDelay - diffTime_sec;
+      console.log(`diffTime_sec: ${diffTime_sec}`);
+      console.log(`delay_sec: ${delay_sec}`);
+      if (delay_sec > 0) {
+        canLike = false;
+        const testDelay = actionDelay * 1000;
+        const temp2 = new Date(last_used.getTime() + testDelay);
+        nextTime = temp2.toISOString();
+
+        setInterval(() => {
+          console.log('ถึงเวลา กด like ได้แล้ว');
+          const nowDate = new Date();
+          this.setState({ canLike: true, nextTime: nowDate.toISOString() });
+        }, delay_sec * 1000);
+      } else {
+        const nowDate = new Date();
+        nextTime = nowDate.toISOString();
+        canLike = true;
+      }
+      console.log(canLike, nextTime);
       await delay(2000);
       const profileLink = createProfileLink(fb_accessToken);
       const resProfile = await axios.get(profileLink);
@@ -48,6 +78,7 @@ class index extends Component {
       const feedLink = createFeedLink(fb_accessToken);
       const resFeed = await axios.get(feedLink);
       const { data: feedData, paging } = resFeed.data;
+      console.log(`fb_accessToken: ${fb_accessToken}`);
       this.setState({
         name,
         profilePicture,
@@ -60,7 +91,9 @@ class index extends Component {
         paging,
         isLoading: false,
         likeState: 'init',
-        testCallApi: 0
+        lastUpdated,
+        canLike
+        //nextTime: nextTime
       });
     } catch (e) {
       console.log(e);
@@ -141,7 +174,8 @@ class index extends Component {
       profilePicture,
       openModal,
       postIndex,
-      likeState
+      likeState,
+      canLike
     } = this.state;
     return (
       <div className={classes.root}>
@@ -178,6 +212,7 @@ class index extends Component {
                   data={data}
                   index={index}
                   onOpenPopUp={this.onOpenPopUp.bind(this)}
+                  canLike={canLike}
                 />
               );
             })}
