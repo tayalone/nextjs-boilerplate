@@ -25,7 +25,16 @@ class index extends Component {
     );
   };
   render() {
-    const { classes, isLoading, name, profilePicture } = this.props;
+    const {
+      classes,
+      isLoading,
+      name,
+      profilePicture,
+      type,
+      auto,
+      onClickSwitch
+    } = this.props;
+    const switchValue = auto === 1 ? true : false;
     return (
       <Grid container spacing={24}>
         <Grid item xs={12} sm={4}>
@@ -62,13 +71,13 @@ class index extends Component {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={true}
-                        // onChange={this.handleChange('checkedB')}
+                        checked={switchValue}
+                        onChange={onClickSwitch}
                         value="checkedB"
                         color="primary"
                       />
                     }
-                    label="Auto Like"
+                    label={`Auto ${type}`}
                   />
                 </div>
                 <div>

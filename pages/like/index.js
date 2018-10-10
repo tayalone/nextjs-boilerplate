@@ -17,7 +17,11 @@ import {
   createProfileLink,
   createPostSumary
 } from '../../lib/createFacebookLink';
-import { createCheckLogin, createLikePost } from '../../lib/createMyApiLink';
+import {
+  createCheckLogin,
+  createLikePost,
+  createSwitchAuto
+} from '../../lib/createMyApiLink';
 
 class index extends Component {
   state = {
@@ -36,16 +40,18 @@ class index extends Component {
     likeState: 'init',
     lastUpdated: '',
     canLike: false,
-    nextTime: ''
+    nextTime: '',
+    auto: 0
   };
   async componentDidMount() {
     try {
       const accessToken = localStorage.getItem('popone_accessToken');
       const resCheckLogin = await axios.get(createCheckLogin(accessToken));
+      console.log(accessToken);
       //onsole.log(resCheckLogin.data);
       const { data: userData } = resCheckLogin.data;
       const { fb_accessToken, countryCode, config, locale } = userData;
-      const { lastUpdated, delay: actionDelay } = config.like;
+      const { lastUpdated, delay: actionDelay, auto } = config.like;
       const current_Date = new Date();
       const last_used = new Date(lastUpdated);
       const diffTime_sec = (current_Date - last_used) / 1000;
@@ -92,8 +98,9 @@ class index extends Component {
         isLoading: false,
         likeState: 'init',
         lastUpdated,
-        canLike
-        //nextTime: nextTime
+        canLike,
+        auto,
+        nextTime: nextTime
       });
     } catch (e) {
       console.log(e);
@@ -208,6 +215,21 @@ class index extends Component {
       console.log(e);
     }
   };
+  onClickSwitch = async () => {
+    try {
+      const { auto, accessToken } = this.state;
+      const newAuto = auto === 1 ? 0 : 1;
+      const link = createSwitchAuto(accessToken);
+      const res = await axios({
+        method: 'post',
+        url: link,
+        data: { type: 'like' }
+      });
+      this.setState({ auto: newAuto });
+    } catch (e) {
+      console.log(e);
+    }
+  };
   render() {
     const { classes } = this.props;
     const {
@@ -218,7 +240,8 @@ class index extends Component {
       openModal,
       postIndex,
       likeState,
-      canLike
+      canLike,
+      auto
     } = this.state;
     return (
       <div className={classes.root}>
@@ -230,6 +253,9 @@ class index extends Component {
             isLoading={isLoading}
             name={name}
             profilePicture={profilePicture}
+            type={'like'}
+            auto={auto}
+            onClickSwitch={this.onClickSwitch.bind(this)}
           />
         </Paper>
         <div style={{ display: 'flex', justifyContent: 'center', margin: 10 }}>
