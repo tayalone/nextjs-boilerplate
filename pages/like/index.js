@@ -17,7 +17,7 @@ import {
   createProfileLink,
   createPostSumary
 } from '../../lib/createFacebookLink';
-import { createCheckLogin } from '../../lib/createMyApiLink';
+import { createCheckLogin, createLikePost } from '../../lib/createMyApiLink';
 
 class index extends Component {
   state = {
@@ -143,27 +143,70 @@ class index extends Component {
     gender
   ) => {
     //console.log(action, ageMin, ageMax, friendTotalMin, friendTotalMax, gender);
-    const { postIndex, feedData, fb_accessToken } = this.state;
-    const currentPost = feedData[postIndex];
-    const { id, reactions } = currentPost;
-    let { total_count } = reactions.summary;
-    // console.log(id, fb_accessToken);
-    console.log(`totat_count :${total_count}`);
-    this.setState({ likeState: 'process' });
-    const inteval = setInterval(async () => {
-      let { feedData } = this.state;
-      const res = await axios.get(createPostSumary(id, fb_accessToken));
-      // ใช้จริง
-      // const new_total_count = res.data.summary.total_count
-      // feedData[postIndex].reactions.summary.total_count = new_total_count;
-      total_count = total_count + 5;
-      feedData[postIndex].reactions.summary.total_count = total_count;
-      this.setState({ feedData: feedData });
-    }, 5000);
-    await delay(20000);
-    clearInterval(inteval);
-    this.setState({ likeState: 'done' });
-    console.log('ครบ 20 วินาที');
+    try {
+      const {
+        postIndex,
+        feedData,
+        fb_accessToken,
+        config,
+        accessToken
+      } = this.state;
+      const currentPost = feedData[postIndex];
+      const { id, reactions } = currentPost;
+      let { total_count } = reactions.summary;
+      const { delay: actionDelay } = config.like;
+
+      this.setState({ likeState: 'process' });
+      const inteval = setInterval(async () => {
+        let { feedData } = this.state;
+        const res = await axios.get(createPostSumary(id, fb_accessToken));
+        // ใช้จริง
+        const new_total_count = res.data.summary.total_count;
+        feedData[postIndex].reactions.summary.total_count = new_total_count;
+        //total_count = total_count + 5;
+        //feedData[postIndex].reactions.summary.total_count = total_count;
+        this.setState({ feedData: feedData });
+      }, 5000);
+      await delay(2000);
+      // -------------- like ของจริง -------------------------------------------
+      const link = createLikePost(accessToken);
+      const res = await axios({
+        method: 'post',
+        url: link,
+        data: {
+          postId: id,
+          action,
+          ageMin,
+          ageMax,
+          friendTotalMin,
+          friendTotalMax,
+          gender
+        }
+      });
+      const data = res.data.data;
+      console.log(data);
+      //-----------------------------------------------------------------------
+      clearInterval(inteval);
+      const nowDate = new Date();
+      const lastUpdated = nowDate.toISOString();
+      const testDelay = actionDelay * 1000;
+      const temp2 = new Date(nowDate.getTime() + testDelay);
+      const nextTime = temp2.toISOString();
+      setInterval(() => {
+        console.log('ถึงเวลา กด like ได้แล้ว');
+        const nowDate = new Date();
+        this.setState({ canLike: true, nextTime: nowDate.toISOString() });
+      }, actionDelay * 1000);
+      this.setState({
+        likeState: 'done',
+        nextTime,
+        lastUpdated,
+        canLike: false
+      });
+      console.log('ครบ 20 วินาที');
+    } catch (e) {
+      console.log(e);
+    }
   };
   render() {
     const { classes } = this.props;

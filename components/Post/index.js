@@ -6,14 +6,7 @@ import moment from 'moment';
 import HeartIcon from '@material-ui/icons/FavoriteBorder';
 import styles from './styles';
 const post = props => {
-  const {
-    classes,
-    profilePicture,
-    data,
-    onOpenPopUp,
-    testValue,
-    canLike
-  } = props;
+  const { classes, profilePicture, data, index, onOpenPopUp, canLike } = props;
   const { total_count } = data.reactions.summary;
   const onClickLink = url => {
     window.open(url, '_blank');
