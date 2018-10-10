@@ -30,8 +30,9 @@ class index extends Component {
     feedData: [],
     paging: {},
     isLoading: true,
-    openModal: true,
-    postIndex: 4
+    openModal: false,
+    postIndex: 0,
+    likeState: 'init'
   };
   async componentDidMount() {
     try {
@@ -56,7 +57,9 @@ class index extends Component {
         locale,
         feedData,
         paging,
-        isLoading: false
+        isLoading: false,
+        likeState: 'init',
+        testCallApi: 0
       });
     } catch (e) {
       console.log(e);
@@ -93,8 +96,30 @@ class index extends Component {
   onClosePopUp = () => {
     this.setState({
       openModal: false,
-      postIndex: -1
+      postIndex: 0,
+      likeState: 'init'
     });
+  };
+  onPumpLike = async (
+    action,
+    ageMin,
+    ageMax,
+    friendTotalMin,
+    friendTotalMax,
+    gender
+  ) => {
+    console.log(action, ageMin, ageMax, friendTotalMin, friendTotalMax, gender);
+    this.setState({ likeState: 'process' });
+    const inteval = setInterval(async () => {
+      let { testCallApi } = this.state;
+      const res = await axios.get('https://jsonplaceholder.typicode.com/posts');
+      console.log(testCallApi + 1);
+      this.setState({ testCallApi: testCallApi + 1 });
+    }, 5000);
+    await delay(20000);
+    clearInterval(inteval);
+    this.setState({ likeState: 'done' });
+    console.log('ครบ 20 วินาที');
   };
   render() {
     const { classes } = this.props;
@@ -104,7 +129,8 @@ class index extends Component {
       name,
       profilePicture,
       openModal,
-      postIndex
+      postIndex,
+      likeState
     } = this.state;
     return (
       <div className={classes.root}>
@@ -146,7 +172,13 @@ class index extends Component {
             })}
           </Fragment>
         )}
-        <LikePost open={openModal} closeModal={this.onClosePopUp.bind(this)} />
+        <LikePost
+          open={openModal}
+          likeState={likeState}
+          data={feedData[postIndex]}
+          closeModal={this.onClosePopUp.bind(this)}
+          onPumpLike={this.onPumpLike.bind(this)}
+        />
       </div>
     );
   }

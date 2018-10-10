@@ -1,4 +1,4 @@
-import { lbHover } from '../../config/color';
+import { lbHover, p, pHover } from '../../config/color';
 const styles = theme => ({
   dialogBody: {
     width: theme.spacing.unit * 70
@@ -22,6 +22,16 @@ const styles = theme => ({
   },
   selectedReaction: {
     border: `2px solid ${lbHover}`
+  },
+  likeDiv: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    color: `${p} !important`,
+    '&:hover': {
+      color: `${pHover} !important`
+    }
   }
 });
 
