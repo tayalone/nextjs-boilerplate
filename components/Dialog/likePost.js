@@ -69,7 +69,7 @@ class index extends Component {
     );
   };
   render() {
-    const { open, classes, data, likeState } = this.props;
+    const { open, classes, data, likeState, isVip } = this.props;
     const { action } = this.state;
     let total_count = 0;
 
@@ -111,6 +111,7 @@ class index extends Component {
           </div>
           {likeState === 'init' ? (
             <div>
+              {isVip ? <div>VIP Section</div> : null}
               {action ? (
                 <Typography variant="subtitle2" gutterBottom>
                   รีแอคขั่น : {action}

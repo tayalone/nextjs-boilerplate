@@ -40,6 +40,7 @@ class index extends Component {
     likeState: 'init',
     lastUpdated: '',
     canLike: false,
+    isVip: false,
     nextTime: '',
     auto: 0
   };
@@ -51,7 +52,7 @@ class index extends Component {
       //onsole.log(resCheckLogin.data);
       const { data: userData } = resCheckLogin.data;
       const { fb_accessToken, countryCode, config, locale } = userData;
-      const { lastUpdated, delay: actionDelay, auto } = config.like;
+      const { lastUpdated, delay: actionDelay, auto, vip_date } = config.like;
       const current_Date = new Date();
       const last_used = new Date(lastUpdated);
       const diffTime_sec = (current_Date - last_used) / 1000;
@@ -77,6 +78,17 @@ class index extends Component {
         canLike = true;
       }
       console.log(canLike, nextTime);
+      //-------------check vip------------------
+      const vipDate = new Date(vip_date);
+      const diffVipTime_sec = (vipDate - current_Date) / 1000;
+      console.log(`diffVipTime_sec : ${diffVipTime_sec}`);
+      let isVip = false;
+      if (diffVipTime_sec > 0) {
+        isVip = true;
+      } else {
+        isVip = false;
+      }
+      //----------------------------------------------
       await delay(2000);
       const profileLink = createProfileLink(fb_accessToken);
       const resProfile = await axios.get(profileLink);
@@ -99,6 +111,7 @@ class index extends Component {
         likeState: 'init',
         lastUpdated,
         canLike,
+        isVip,
         auto,
         nextTime: nextTime
       });
@@ -241,6 +254,7 @@ class index extends Component {
       postIndex,
       likeState,
       canLike,
+      isVip,
       auto
     } = this.state;
     return (
@@ -293,6 +307,7 @@ class index extends Component {
           data={feedData[postIndex]}
           closeModal={this.onClosePopUp.bind(this)}
           onPumpLike={this.onPumpLike.bind(this)}
+          isVip={isVip}
         />
       </div>
     );
