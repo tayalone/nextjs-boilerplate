@@ -1,13 +1,13 @@
-import App, { Container } from 'next/app';
 import React from 'react';
+import App, { Container } from 'next/app';
+import { I18nextProvider } from 'react-i18next';
+import initialI18nInstance from '../i18n';
 import withReduxStore from '../lib/with-redux-store';
 import { Provider } from 'react-redux';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import JssProvider from 'react-jss/lib/JssProvider';
 import getPageContext from '../src/getPageContext';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 class MyApp extends App {
   constructor(props) {
@@ -23,7 +23,20 @@ class MyApp extends App {
   }
   render() {
     const { Component, pageProps, reduxStore } = this.props;
+    const { i18n, initialI18nStore, initialLanguage } = pageProps || {};
+
     return (
+      // <Container>
+      //   <I18nextProvider
+      //     i18n={i18n || initialI18nInstance}
+      //     initialI18nStore={initialI18nStore}
+      //     initialLanguage={initialLanguage}
+      //   >
+      //     <React.Fragment>
+      //       <Component {...pageProps} />
+      //     </React.Fragment>
+      //   </I18nextProvider>
+      // </Container>
       <Container>
         <Provider store={reduxStore}>
           {/* <Component {...pageProps} /> */}
@@ -41,7 +54,13 @@ class MyApp extends App {
               <CssBaseline />
               {/* Pass pageContext to the _document though the renderPage enhancer
                 to render collected styles on server side. */}
-              <Component pageContext={this.pageContext} {...pageProps} />
+              <I18nextProvider
+                i18n={i18n || initialI18nInstance}
+                initialI18nStore={initialI18nStore}
+                initialLanguage={initialLanguage}
+              >
+                <Component pageContext={this.pageContext} {...pageProps} />
+              </I18nextProvider>
             </MuiThemeProvider>
           </JssProvider>
         </Provider>
@@ -49,10 +68,4 @@ class MyApp extends App {
     );
   }
 }
-
-const mapStateToProps = state => {
-  const { value } = stat.counter;
-  console.log(value);
-};
-
 export default withReduxStore(MyApp);

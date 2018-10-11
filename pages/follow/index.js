@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withI18next } from '../../lib/withI18next';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
@@ -19,16 +20,17 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
-
 import { createProfileLink } from '../../lib/createFacebookLink';
 import {
   createCheckLogin,
   createFollowUser,
   createSwitchAuto
 } from '../../lib/createMyApiLink';
+import i18n from '../../i18n';
 
 class index extends Component {
   state = {
+    isRender: false,
     name: '',
     profilePicture: '',
     accessToken: '',
@@ -53,7 +55,20 @@ class index extends Component {
     diffVipTime_sec: 0,
     vip_date: ''
   };
+  static async getInitialProps({ query }) {
+    const { country, language } = query;
+    //console.log(query);
+    return { country, language };
+  }
+  componentWillMount() {
+    const { language } = this.props;
+    //console.log(language);
+    i18n.changeLanguage(language);
+  }
   async componentDidMount() {
+    setTimeout(() => {
+      this.setState({ isRender: true });
+    }, 1500);
     try {
       const accessToken = localStorage.getItem('popone_accessToken');
       if (!accessToken) {
@@ -246,8 +261,9 @@ class index extends Component {
     this.setState({ gender: event.target.value });
   };
   render() {
-    const { classes } = this.props;
+    const { t, classes, country, language } = this.props;
     const {
+      isRender,
       isLoading,
       name,
       profilePicture,
@@ -268,110 +284,128 @@ class index extends Component {
       countDown
     } = this.state;
     return (
-      <div className={classes.root}>
-        <Paper className={classes.paper}>
-          <SwitchPage classes={classes} Type={'follow'} isLoading={isLoading} />
-        </Paper>
-        <Paper className={classes.paper}>
-          <ProfileHeader
-            isLoading={isLoading}
-            name={name}
-            profilePicture={profilePicture}
-            type={'follow'}
-            auto={auto}
-            onClickSwitch={this.onClickSwitch.bind(this)}
-            nextTime={nextTime}
-            lastUpdated={lastUpdated}
-            delay_sec={delay_sec}
-            diffVipTime_sec={diffVipTime_sec}
-            vip_date={vip_date}
-            isVip={isVip}
-            countDown={countDown}
-          />
-        </Paper>
-        {isVip ? (
-          <Paper className={classes.paperVIP}>
-            <div>
-              <div>
-                <p>
-                  ช่วงอายุ: {ageMin}- {ageMax} ปี
-                </p>
-                <Range
-                  allowCross={false}
-                  defaultValue={[ageMin, ageMax]}
-                  onChange={this.changeAgeRage}
-                  min={18}
-                  max={40}
-                />
-              </div>
-              <div>
-                <p>
-                  ช่วเพื่อน: {friendTotalMin}- {friendTotalMax} คน
-                </p>
-                <Range
-                  allowCross={false}
-                  defaultValue={[friendTotalMin, friendTotalMax]}
-                  onChange={this.changeFollowRage}
-                  min={50}
-                  max={1500}
-                  step={50}
-                />
-              </div>
-              <div style={{ margin: 8 }}>
-                <FormControl
-                  component="fieldset"
-                  className={classes.formControl}
-                >
-                  <FormLabel component="legend">เพศ</FormLabel>
-                  <RadioGroup
-                    aria-label="Gender"
-                    name="gender1"
-                    value={gender}
-                    onChange={this.handleChange}
-                    row
-                  >
-                    <FormControlLabel
-                      value="both"
-                      control={<Radio />}
-                      label="สุ่มเพศ"
+      <Fragment>
+        {isRender ? (
+          <div className={classes.root}>
+            <Paper className={classes.paper}>
+              <SwitchPage
+                classes={classes}
+                Type={'follow'}
+                isLoading={isLoading}
+                country={country}
+                language={language}
+                t={t}
+              />
+            </Paper>
+            <Paper className={classes.paper}>
+              <ProfileHeader
+                isLoading={isLoading}
+                name={name}
+                profilePicture={profilePicture}
+                type={'follow'}
+                auto={auto}
+                onClickSwitch={this.onClickSwitch.bind(this)}
+                nextTime={nextTime}
+                lastUpdated={lastUpdated}
+                delay_sec={delay_sec}
+                diffVipTime_sec={diffVipTime_sec}
+                vip_date={vip_date}
+                isVip={isVip}
+                countDown={countDown}
+                t={t}
+              />
+            </Paper>
+            {isVip ? (
+              <Paper className={classes.paperVIP}>
+                <div>
+                  <div>
+                    <p>
+                      {t('common:age_range')}: {ageMin}- {ageMax}{' '}
+                      {t('common:age')}
+                    </p>
+                    <Range
+                      allowCross={false}
+                      defaultValue={[ageMin, ageMax]}
+                      onChange={this.changeAgeRage}
+                      min={18}
+                      max={40}
                     />
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="เพศหญิง"
+                  </div>
+                  <div>
+                    <p>
+                      {t('common:friend_range')}: {friendTotalMin}-{' '}
+                      {friendTotalMax} {t('common:friend')}
+                    </p>
+                    <Range
+                      allowCross={false}
+                      defaultValue={[friendTotalMin, friendTotalMax]}
+                      onChange={this.changeFollowRage}
+                      min={50}
+                      max={1500}
+                      step={50}
                     />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="เพศชาย"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </div>
+                  </div>
+                  <div style={{ margin: 8 }}>
+                    <FormControl
+                      component="fieldset"
+                      className={classes.formControl}
+                    >
+                      <FormLabel component="legend">
+                        {t('common:gender')}
+                      </FormLabel>
+                      <RadioGroup
+                        aria-label="Gender"
+                        name="gender1"
+                        value={gender}
+                        onChange={this.handleChange}
+                        row
+                      >
+                        <FormControlLabel
+                          value="both"
+                          control={<Radio />}
+                          label={t('common:random')}
+                        />
+                        <FormControlLabel
+                          value="female"
+                          control={<Radio />}
+                          label={t('common:female')}
+                        />
+                        <FormControlLabel
+                          value="male"
+                          control={<Radio />}
+                          label={t('common:male')}
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                </div>
+              </Paper>
+            ) : null}
+            <div
+              style={{ display: 'flex', justifyContent: 'center', margin: 10 }}
+            >
+              <Button
+                variant="contained"
+                className={classes.button}
+                onClick={this.onFollowUse.bind(this)}
+                disabled={
+                  isLoading
+                    ? Boolean(true)
+                    : !canFollow
+                      ? Boolean(true)
+                      : Boolean(false)
+                }
+                color={'secondary'}
+              >
+                <AccountCircle style={{ marginRight: 8 }} />
+                {t('follow_button')}
+              </Button>
             </div>
-          </Paper>
+          </div>
         ) : null}
-        <div style={{ display: 'flex', justifyContent: 'center', margin: 10 }}>
-          <Button
-            variant="contained"
-            className={classes.button}
-            onClick={this.onFollowUse.bind(this)}
-            disabled={
-              isLoading
-                ? Boolean(true)
-                : !canFollow
-                  ? Boolean(true)
-                  : Boolean(false)
-            }
-            color={'secondary'}
-          >
-            <AccountCircle style={{ marginRight: 8 }} />
-            เพิ่มผู้ติดตาม
-          </Button>
-        </div>
-      </div>
+      </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(index);
+export default withStyles(styles)(withI18next(['follow', 'common'])(index));

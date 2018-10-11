@@ -39,7 +39,8 @@ class index extends Component {
       delay_sec,
       diffVipTime_sec,
       vip_date,
-      countDown
+      countDown,
+      t
     } = this.props;
     const switchValue = auto === 1 ? true : false;
     return (
@@ -60,28 +61,30 @@ class index extends Component {
             <Fragment>
               <div>
                 <Typography variant="body1" gutterBottom>
-                  Name : {name}
+                  {t('common:name')} : {name}
                 </Typography>
               </div>
               <div>
                 <Typography variant="body1" gutterBottom>
-                  Status : {isVip ? 'VIP user' : 'Free user'}
+                  {t('common:status')} : {isVip ? 'VIP user' : 'Free user'}
                 </Typography>
               </div>
               <div>
                 <Typography variant="body1" gutterBottom>
-                  เวลา vip : {isVip ? vip_date : '-'}
+                  {t('common:vip_time')} : {isVip ? vip_date : '-'}
                 </Typography>
               </div>
               <div>
                 <Typography variant="body1" gutterBottom>
-                  เวลาใช้งานล่าสุด : {countDown > 0 ? lastUpdated : '-'}
+                  {t('common:lastTime_used')} :{' '}
+                  {countDown > 0 ? lastUpdated : '-'}
                 </Typography>
               </div>
               {countDown > 0 ? (
                 <div>
                   <Typography variant="body1" gutterBottom>
-                    สามารถใช้งานครั้งต่อไปใน {parseInt(countDown)} วินาที
+                    {t('common:lastTime_used')} {parseInt(countDown)}{' '}
+                    {t('common:second')}
                   </Typography>
                 </div>
               ) : null}
@@ -101,7 +104,7 @@ class index extends Component {
                 </div>
                 <div>
                   <Button variant="contained" color="secondary">
-                    Log Out
+                    {t('common:logout')}
                   </Button>
                 </div>
               </div>{' '}

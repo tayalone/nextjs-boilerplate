@@ -37,14 +37,20 @@ class loginWihtToken extends Component {
     this.props.handleClose();
   };
   onTextfieldChange = async e => {
+    const { country, language } = this.props;
     if (e.target.value) {
-      this.props.loginWithToken(e.target.value, this.closeModal.bind(this));
+      this.props.loginWithToken(
+        e.target.value,
+        this.closeModal.bind(this),
+        country,
+        language
+      );
     } else {
       return;
     }
   };
   render() {
-    const { open, classes, isLoading, errorMessage } = this.props;
+    const { open, classes, isLoading, errorMessage, t } = this.props;
     const { facebookToken, textAreaToggle } = this.state;
     return (
       <Dialog
@@ -61,7 +67,7 @@ class loginWihtToken extends Component {
           </IconButton>
         </div>
         <DialogTitle id="alert-dialog-slide-title">
-          {'ล็อคอิน Facebook ของท่าน'}
+          {t('modal_token')}
         </DialogTitle>
         <DialogContent className={classes.dialogBody}>
           <TextField
@@ -70,10 +76,10 @@ class loginWihtToken extends Component {
             helperText={errorMessage}
             margin="dense"
             id="token"
-            label="Facebook Token: "
+            label={t('facbook_tokne')}
             type="text"
             fullWidth
-            value={facebookToken}
+            value={t('close_modal')}
             onChange={e => this.onTextfieldChange(e)}
           />
         </DialogContent>

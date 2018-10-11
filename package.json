@@ -1,31 +1,39 @@
 {
   "name": "popone-fontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "dev": "next -p 3001",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production node server.js"
   },
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "latest",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
+    "express": "^4.16.4",
+    "i18next": "11.9.0",
+    "i18next-browser-languagedetector": "2.2.3",
+    "i18next-express-middleware": "1.4.0",
+    "i18next-node-fs-backend": "2.1.0",
+    "i18next-xhr-backend": "1.5.1",
+    "ip-to-location": "^1.0.1",
     "jss": "latest",
     "moment": "^2.22.2",
-    "next": "^7.0.1",
     "prop-types": "latest",
-    "puppeteer": "^1.9.0",
     "rc-slider": "^8.6.3",
+    "next": "^7.0.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-i18next": "7.13.0",
     "react-jss": "latest",
     "react-redux": "^5.0.1",
     "redux": "^3.6.0",
     "redux-devtools-extension": "^2.13.2",
-    "redux-thunk": "^2.1.0",
-    "ws": "^6.1.0"
-  },
-  "devDependencies": {
-    "dotenv": "^6.0.0"
+    "redux-thunk": "^2.1.0"
   }
 }

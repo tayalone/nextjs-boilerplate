@@ -1,5 +1,4 @@
-const ip2location = require('ip-to-location');
-
+const i18n = require('./i18n');
 module.exports = async ({ server, app }) => {
   //--------------- index -------------------------------
   server.get('/', async (req, res) => {

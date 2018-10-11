@@ -3,10 +3,10 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Router from 'next/router';
 
-export default ({ classes, Type, isLoading }) => {
+export default ({ classes, Type, isLoading, country, language, t }) => {
   const clickLink = type => {
     Router.push({
-      pathname: `/${type}`
+      pathname: `/${country}/${language}/${type}`
     });
   };
   return (
@@ -25,7 +25,7 @@ export default ({ classes, Type, isLoading }) => {
           }
           onClick={() => clickLink('like')}
         >
-          Like
+          {t('common:like_page')}
         </Button>
       </Grid>
       <Grid item xs={6}>
@@ -42,7 +42,7 @@ export default ({ classes, Type, isLoading }) => {
           }
           onClick={() => clickLink('follow')}
         >
-          Follow
+          {t('common:follow_page')}
         </Button>
       </Grid>
     </Grid>

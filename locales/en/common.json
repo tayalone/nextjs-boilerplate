@@ -1,0 +1,21 @@
+{
+  "like_page": "BoostLike Page",
+  "follow_page": "BoostFollower Page",
+  "name": "Name",
+  "status": "Status",
+  "vip_time": "VIP Expire",
+  "lastTime_used": "lastTime Used",
+  "countDown": "Can use Nextime in",
+  "second": "sec",
+  "logout": "Log Out",
+  "age_range": "Age Range",
+  "age": "Yeas",
+  "friend_range": "Friend Range",
+  "friend": "People",
+  "gender": "Gender",
+  "random": "Random",
+  "male": "Male",
+  "female": "Female",
+  "reaction": "Reaction",
+  "choose_option": "Choose option"
+}

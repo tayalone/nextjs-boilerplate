@@ -1,25 +1,39 @@
 import Router from 'next/router';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import classNames from 'classnames';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
-
 import SettingIcon from '@material-ui/icons/SettingsOutlined';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
+import { withStyles } from '@material-ui/core/styles';
+import { withI18next } from '../../lib/withI18next';
 import styles from './styles';
-import { addNumber, subNumber } from '../../action';
 import IndexHeader from '../../components/UI/indexHeader';
 import Footer from '../../components/UI/footer';
 import LoginWithFacebook from '../../components/Dialog/loginWithFacebook';
 import LoginWihtToken from '../../components/Dialog/loginWihtToken';
-import testConnectRedux from '../../hoc/testConnectRedux';
+import i18n from '../../i18n';
+
 class index extends Component {
   state = {
+    isRender: false,
     openUser: false,
     openToken: false
   };
+  static async getInitialProps({ query }) {
+    const { country, language } = query;
+    //console.log(query);
+    return { country, language };
+  }
+  componentWillMount() {
+    const { language } = this.props;
+    //console.log(language);
+    i18n.changeLanguage(language);
+  }
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({ isRender: true });
+    }, 1500);
+  }
   openEnableFacebook = () => {
     window.open('https://www.facebook.com/settings?tab=privacy', '_blank');
   };
@@ -35,97 +49,77 @@ class index extends Component {
   handleCloseToken = () => {
     this.setState({ openToken: false });
   };
-  componentDidMount() {
-    const accessToken = localStorage.getItem('popone_accessToken');
-    if (accessToken) {
-      Router.push({
-        pathname: '/like'
-      });
-    }
-  }
   render() {
-    const { classes } = this.props;
+    const { t, classes, country, language } = this.props;
+    const { isRender } = this.state;
     return (
-      <div className={classes.root}>
-        <Grid container className={classes.indexContainer} spacing={16}>
-          <IndexHeader classes={classes} />
-          <Grid item xs={12}>
-            <div className={classes.indexContent}>
-              <div className={classNames(classes.alertDiv, classes.green)}>
-                <SettingIcon style={{ fontSize: 30 }} />
-                <p>
-                  Free User สามารถปั้มได้ 40 / VIP User สามารถปั้มได้ 300 ต่อ 1
-                  รอบ
-                </p>
-              </div>
-              <div className={classes.btnDiv}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={this.handleClickOpenUser}
-                >
-                  เข้าสู่ระบบด้วย Facebook
-                </Button>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={this.handleClickOpenToken}
-                >
-                  เข้าสู่ระบบด้วย Token
-                </Button>
-              </div>
-              <div className={classNames(classes.alertDiv, classes.blue)}>
-                <InfoIcon style={{ fontSize: 30 }} />
-                <p>
-                  อย่าลืมตรวจสอบว่าคุณได้เปิดผู้ติดตามโดยต้องตั้งค่าในเฟสให้มีอายุ
-                  18 ปีขึ้นไปถึงจะเปิดได้
-                  และได้ตั้งโพสต์ที่ต้องการเพิ่มไลค์เป็นสาธารณะแล้ว{' '}
-                  <span
-                    onClick={this.openEnableFacebook}
-                    className={classes.link}
-                  >
-                    เปิดผู้ติดตามคลิกที่นี้
-                  </span>
-                </p>
-              </div>
-              <div className={classNames(classes.alertDiv, classes.red)}>
-                <InfoIcon style={{ fontSize: 30 }} />
-                <p>
-                  คำเตือน :
-                  เว็บนี้เป็นเพียงสื่อกลางในการแลกเปลี่ยนไลค์ซึ่งกันและกัน
-                  เขาไลค์ให้คุณ คุณก็จะไลค์ให้เขา
-                </p>
-              </div>
-            </div>
-          </Grid>
-          <Footer classes={classes} />
-        </Grid>
-        {String(this.state.open)}
-        <LoginWithFacebook
-          open={this.state.openUser}
-          handleClose={this.handleCloseUser.bind(this)}
-        />
-        <LoginWihtToken
-          open={this.state.openToken}
-          handleClose={this.handleCloseToken.bind(this)}
-        />
-      </div>
+      <Fragment>
+        {isRender ? (
+          <div className={classes.root}>
+            <Grid container className={classes.indexContainer} spacing={16}>
+              <IndexHeader classes={classes} />
+              <Grid item xs={12}>
+                <div className={classes.indexContent}>
+                  <div className={classNames(classes.alertDiv, classes.green)}>
+                    <SettingIcon style={{ fontSize: 30 }} />
+                    <p>{t('1box')}</p>
+                  </div>
+                  <div className={classes.btnDiv}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      onClick={this.handleClickOpenUser}
+                    >
+                      {t('modal_username')}
+                    </Button>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      onClick={this.handleClickOpenToken}
+                    >
+                      {t('modal_token')}
+                    </Button>
+                  </div>
+                  <div className={classNames(classes.alertDiv, classes.blue)}>
+                    <InfoIcon style={{ fontSize: 30 }} />
+                    <p>
+                      {t('2box')}{' '}
+                      <span
+                        onClick={this.openEnableFacebook}
+                        className={classes.link}
+                      >
+                        {t('2box_underline')}
+                      </span>
+                    </p>
+                  </div>
+                  <div className={classNames(classes.alertDiv, classes.red)}>
+                    <InfoIcon style={{ fontSize: 30 }} />
+                    <p>{t('3box')}</p>
+                  </div>
+                </div>
+              </Grid>
+              <Footer classes={classes} />
+            </Grid>
+            {String(this.state.open)}
+            <LoginWithFacebook
+              open={this.state.openUser}
+              handleClose={this.handleCloseUser.bind(this)}
+              t={t}
+              country={country}
+              language={language}
+            />
+            <LoginWihtToken
+              open={this.state.openToken}
+              handleClose={this.handleCloseToken.bind(this)}
+              t={t}
+              country={country}
+              language={language}
+            />
+          </div>
+        ) : null}
+      </Fragment>
     );
   }
 }
 
-const mapStateToProps = state => {
-  const { counter } = state;
-  const { value } = counter;
-  return { value };
-};
-
-const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ addNumber, subNumber }, dispatch);
-};
-export default testConnectRedux(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(withStyles(styles)(index))
-);
+export default withStyles(styles)(withI18next(['index'])(index));

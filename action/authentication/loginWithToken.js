@@ -6,7 +6,7 @@ import {
 import axios from 'axios';
 import Router from 'next/router';
 
-export default (token, closeModal) => {
+export default (token, closeModal, country, language) => {
   return async dispatch => {
     try {
       console.log(token);
@@ -22,7 +22,7 @@ export default (token, closeModal) => {
       closeModal();
       setTimeout(function() {
         Router.push({
-          pathname: '/like'
+          pathname: `/${country}/${language}/like`
         });
       }, 3000);
     } catch (e) {

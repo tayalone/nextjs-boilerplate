@@ -84,7 +84,7 @@ class index extends Component {
       friendTotalMax,
       gender
     } = this.state;
-    console.log(action, ageMin, ageMax, friendTotalMin, friendTotalMax, gender);
+    //console.log(action, ageMin, ageMax, friendTotalMin, friendTotalMax, gender);
     this.props.onPumpLike(
       action,
       ageMin,
@@ -95,7 +95,7 @@ class index extends Component {
     );
   };
   render() {
-    const { open, classes, data, likeState, isVip } = this.props;
+    const { open, classes, data, likeState, isVip, t } = this.props;
     const {
       action,
       ageMin,
@@ -135,7 +135,7 @@ class index extends Component {
         ) : null}
 
         <DialogTitle id="alert-dialog-slide-title">
-          {'เลือกออปชั่นสำหรับโพสต์'}
+          {t('common:choose_option')}
         </DialogTitle>
         <DialogContent className={classes.likeDialogBody}>
           <div className={classes.likeDiv}>
@@ -148,7 +148,8 @@ class index extends Component {
                 <div>
                   <div>
                     <p>
-                      ช่วงอายุ: {ageMin}- {ageMax} ปี
+                      {t('common:age_range')}: {ageMin}- {ageMax}{' '}
+                      {t('common:age')}
                     </p>
                     <Range
                       allowCross={false}
@@ -160,7 +161,8 @@ class index extends Component {
                   </div>
                   <div>
                     <p>
-                      ช่วเพื่อน: {friendTotalMin}- {friendTotalMax} คน
+                      {t('common:friend_range')}: {friendTotalMin}-{' '}
+                      {friendTotalMax} {t('common:friend')}
                     </p>
                     <Range
                       allowCross={false}
@@ -176,7 +178,9 @@ class index extends Component {
                       component="fieldset"
                       className={classes.formControl}
                     >
-                      <FormLabel component="legend">เพศ</FormLabel>
+                      <FormLabel component="legend">
+                        {t('common:gender')}
+                      </FormLabel>
                       <RadioGroup
                         aria-label="Gender"
                         name="gender1"
@@ -187,17 +191,17 @@ class index extends Component {
                         <FormControlLabel
                           value="both"
                           control={<Radio />}
-                          label="สุ่มเพศ"
+                          label={t('common:random')}
                         />
                         <FormControlLabel
                           value="female"
                           control={<Radio />}
-                          label="เพศหญิง"
+                          label={t('common:female')}
                         />
                         <FormControlLabel
                           value="male"
                           control={<Radio />}
-                          label="เพศชาย"
+                          label={t('common:male')}
                         />
                       </RadioGroup>
                     </FormControl>
@@ -206,7 +210,7 @@ class index extends Component {
               ) : null}
               {action ? (
                 <Typography variant="subtitle2" gutterBottom>
-                  รีแอคขั่น : {action}
+                  {t('common:reaction')} : {action}
                 </Typography>
               ) : null}
 

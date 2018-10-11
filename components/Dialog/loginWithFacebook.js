@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import Router from 'next/router';
 import {
   Button,
   Slide,
@@ -70,6 +69,7 @@ class loginWithFacebook extends Component {
     console.log(elmnt);
   };
   onTextfieldChange = async e => {
+    const { country, language } = this.props;
     if (e.target.value) {
       try {
         const obj = JSON.parse(e.target.value);
@@ -81,7 +81,9 @@ class loginWithFacebook extends Component {
         } else {
           this.props.loginWithToken(
             obj.access_token,
-            this.closeModal.bind(this)
+            this.closeModal.bind(this),
+            country,
+            language
           );
           this.setState({
             facebookToken: obj.access_token,
@@ -96,7 +98,7 @@ class loginWithFacebook extends Component {
     }
   };
   render() {
-    const { open, classes, isLoading, errorMessage } = this.props;
+    const { open, classes, isLoading, errorMessage, t } = this.props;
     const {
       email,
       password,
@@ -120,14 +122,14 @@ class loginWithFacebook extends Component {
           </IconButton>
         </div>
         <DialogTitle id="alert-dialog-slide-title">
-          {'ล็อคอิน Facebook ของท่าน'}
+          {t('modal_username')}
         </DialogTitle>
         <DialogContent className={classes.dialogBody}>
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Email or Telephone No."
+            label={t('username')}
             type="text"
             fullWidth
             value={email}
@@ -136,7 +138,7 @@ class loginWithFacebook extends Component {
           <TextField
             margin="dense"
             id="password"
-            label="Password"
+            label={t('password')}
             type="password"
             fullWidth
             value={password}
@@ -193,10 +195,10 @@ class loginWithFacebook extends Component {
             color="primary"
             disabled={errorMessage ? Boolean(true) : Boolean(false)}
           >
-            Generate Token
+            {t('gen_token')}
           </Button>
           <Button onClick={this.closeModal.bind(this)} color="secondary">
-            Close Modal
+            {t('close_modal')}
           </Button>
         </DialogActions>
       </Dialog>

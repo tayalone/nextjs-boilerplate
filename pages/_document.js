@@ -25,7 +25,10 @@ class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700"
           />
-          <link rel="stylesheet" href="../static/rc-slider.css" />
+          <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/rc-slider@8.6.3/assets/index.css"
+          />
         </Head>
         <body>
           <Main />

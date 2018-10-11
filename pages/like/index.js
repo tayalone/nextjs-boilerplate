@@ -5,13 +5,15 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import styles from './styles';
-
+import { withI18next } from '../../lib/withI18next';
 import ProfileHeader from '../../components/ProfileHeader';
 import SwitchPage from '../../components/UI/switchPage';
 import Spinner from '../../components/UI/spinner';
 import Post from '../../components/Post';
 import LikePost from '../../components/Dialog/likePost';
 import delay from '../../lib/delay';
+import i18n from '../../i18n';
+
 import {
   createFeedLink,
   createProfileLink,
@@ -25,6 +27,7 @@ import {
 
 class index extends Component {
   state = {
+    isRender: false,
     name: '',
     profilePicture: '',
     accessToken: '',
@@ -48,7 +51,20 @@ class index extends Component {
     diffVipTime_sec: 0,
     countDown: 0
   };
+  static async getInitialProps({ query }) {
+    const { country, language } = query;
+    //console.log(query);
+    return { country, language };
+  }
+  componentWillMount() {
+    const { language } = this.props;
+    //console.log(language);
+    i18n.changeLanguage(language);
+  }
   async componentDidMount() {
+    setTimeout(() => {
+      this.setState({ isRender: true });
+    }, 1500);
     try {
       const accessToken = localStorage.getItem('popone_accessToken');
       if (!accessToken) {
@@ -279,7 +295,7 @@ class index extends Component {
     }
   };
   render() {
-    const { classes } = this.props;
+    const { t, classes, country, language } = this.props;
     const {
       isLoading,
       feedData,
@@ -296,70 +312,88 @@ class index extends Component {
       vip_date,
       delay_sec,
       diffVipTime_sec,
-      countDown
+      countDown,
+      isRender
     } = this.state;
     return (
-      <div className={classes.root}>
-        <Paper className={classes.paper}>
-          <SwitchPage classes={classes} Type={'like'} isLoading={isLoading} />
-        </Paper>
-        <Paper className={classes.paper}>
-          <ProfileHeader
-            isLoading={isLoading}
-            name={name}
-            profilePicture={profilePicture}
-            type={'like'}
-            auto={auto}
-            onClickSwitch={this.onClickSwitch.bind(this)}
-            nextTime={nextTime}
-            lastUpdated={lastUpdated}
-            delay_sec={delay_sec}
-            diffVipTime_sec={diffVipTime_sec}
-            vip_date={vip_date}
-            isVip={isVip}
-            countDown={countDown}
-          />
-        </Paper>
-        <div style={{ display: 'flex', justifyContent: 'center', margin: 10 }}>
-          <Button
-            variant="contained"
-            className={classes.button}
-            onClick={this.refrechFeed.bind(this)}
-            disabled={isLoading ? Boolean(true) : Boolean(false)}
-          >
-            <RefreshIcon style={{ marginRight: 8 }} />
-            รีเฟรสหน้าฟีด
-          </Button>
-        </div>
-        {isLoading ? (
-          <Spinner size={60} />
-        ) : (
-          <Fragment>
-            {feedData.map((data, index) => {
-              return (
-                <Post
-                  key={`post-${data.id}`}
-                  profilePicture={profilePicture}
-                  data={data}
-                  index={index}
-                  onOpenPopUp={this.onOpenPopUp.bind(this)}
-                  canLike={canLike}
-                />
-              );
-            })}
-          </Fragment>
-        )}
-        <LikePost
-          open={openModal}
-          likeState={likeState}
-          data={feedData[postIndex]}
-          closeModal={this.onClosePopUp.bind(this)}
-          onPumpLike={this.onPumpLike.bind(this)}
-          isVip={isVip}
-        />
-      </div>
+      <Fragment>
+        {isRender ? (
+          <div className={classes.root}>
+            <Paper className={classes.paper}>
+              <SwitchPage
+                classes={classes}
+                Type={'like'}
+                isLoading={isLoading}
+                country={country}
+                language={language}
+                t={t}
+              />
+            </Paper>
+            <Paper className={classes.paper}>
+              <ProfileHeader
+                isLoading={isLoading}
+                name={name}
+                profilePicture={profilePicture}
+                type={'like'}
+                auto={auto}
+                onClickSwitch={this.onClickSwitch.bind(this)}
+                nextTime={nextTime}
+                lastUpdated={lastUpdated}
+                delay_sec={delay_sec}
+                diffVipTime_sec={diffVipTime_sec}
+                vip_date={vip_date}
+                isVip={isVip}
+                countDown={countDown}
+                t={t}
+              />
+            </Paper>
+            <div
+              style={{ display: 'flex', justifyContent: 'center', margin: 10 }}
+            >
+              <Button
+                variant="contained"
+                className={classes.button}
+                onClick={this.refrechFeed.bind(this)}
+                disabled={isLoading ? Boolean(true) : Boolean(false)}
+              >
+                <RefreshIcon style={{ marginRight: 8 }} />
+                {t('refresh_feed')}
+              </Button>
+            </div>
+            {isLoading ? (
+              <Spinner size={60} />
+            ) : (
+              <Fragment>
+                {feedData.map((data, index) => {
+                  return (
+                    <Post
+                      key={`post-${data.id}`}
+                      profilePicture={profilePicture}
+                      data={data}
+                      index={index}
+                      onOpenPopUp={this.onOpenPopUp.bind(this)}
+                      canLike={canLike}
+                      t={t}
+                      language={language}
+                    />
+                  );
+                })}
+              </Fragment>
+            )}
+            <LikePost
+              open={openModal}
+              likeState={likeState}
+              data={feedData[postIndex]}
+              closeModal={this.onClosePopUp.bind(this)}
+              onPumpLike={this.onPumpLike.bind(this)}
+              isVip={isVip}
+              t={t}
+            />
+          </div>
+        ) : null}
+      </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(index);
+export default withStyles(styles)(withI18next(['like', 'common'])(index));

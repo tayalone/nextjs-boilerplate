@@ -6,14 +6,23 @@ import moment from 'moment';
 import HeartIcon from '@material-ui/icons/FavoriteBorder';
 import styles from './styles';
 const post = props => {
-  const { classes, profilePicture, data, index, onOpenPopUp, canLike } = props;
+  const {
+    classes,
+    profilePicture,
+    data,
+    index,
+    onOpenPopUp,
+    canLike,
+    t,
+    language
+  } = props;
   const { total_count } = data.reactions.summary;
   const onClickLink = url => {
     window.open(url, '_blank');
   };
   const { value, description } = data.privacy;
   const { created_time } = data;
-  moment.locale('th');
+  moment.locale(language);
   const ms = Date.parse(created_time);
   const date = new Date(ms);
   const checkPublic =
@@ -41,7 +50,9 @@ const post = props => {
         <div className={classes.actionLikeDiv}>
           <div className={classes.likeDiv}>
             <HeartIcon style={{ marginRight: 8 }} />
-            <Typography variant="caption">{total_count} ไลค์</Typography>
+            <Typography variant="caption">
+              {total_count} {t('like')}
+            </Typography>
           </div>
           {checkPublic ? (
             <Button
@@ -50,7 +61,7 @@ const post = props => {
               onClick={() => onOpenPopUp(index)}
               disabled={canLike ? Boolean(false) : Boolean(true)}
             >
-              ปั้มไลค์
+              {t('boost_like')}
             </Button>
           ) : (
             <Button
@@ -58,7 +69,7 @@ const post = props => {
               color="secondary"
               onClick={() => onClickLink(`https://facebook.com/${data.id}`)}
             >
-              ปรับโพสต์ของคุณให้เป็น "สาธารณะ"
+              {t('alert_privacy')}
             </Button>
           )}
 
